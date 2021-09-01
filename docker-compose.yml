@@ -75,3 +75,7 @@ services:
 volumes:
   geniacs-mongodb:
     driver: local
+
+networks:
+    genieacs:
+      driver: bridge
