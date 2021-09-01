@@ -6,6 +6,8 @@ services:
     image: mongo
     container_name: genieacs-mongodb
     restart: unless-stopped
+    ports: 
+      - "27017-27019:27017-27019"
     networks:
       genieacs:
     volumes:
@@ -15,6 +17,7 @@ services:
   cwmp:
     depends_on:
       - mongodb
+    container_name: genieacs-cwmp
     extends:
       file: docker-compose.common.yml
       service: genieacs
@@ -28,6 +31,7 @@ services:
   nbi:
     depends_on:
       - mongodb
+    container_name: genieacs-nbi
     extends:
       file: docker-compose.common.yml
       service: genieacs
@@ -41,6 +45,7 @@ services:
   fs:
     depends_on:
       - mongodb
+    container_name: genieacs-fs
     extends:
       file: docker-compose.common.yml
       service: genieacs
@@ -54,6 +59,7 @@ services:
   ui:
     depends_on:
       - mongodb
+    container_name: genieacs-ui
     extends:
       file: docker-compose.common.yml
       service: genieacs
