@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+
+  mongodb:
+    image: mongo
+
+  fs:
+    depends_on:
+      - mongodb
+    extends:
+      file: docker-compose.common.yml
+      service: genieacs
+    ports:
+      - 7567:7567
+    command:
+      - genieacs-fs

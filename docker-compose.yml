@@ -1,0 +1,63 @@
+version: "3.9"
+
+services:
+
+  mongodb:
+    image: mongo
+    container_name: genieacs-mongodb
+    restart: unless-stopped
+    ports:
+      - 27017-27019:27017-27019
+    volumes:
+      - ./geniacs-mongodb:/data/db
+
+
+  cwmp:
+    depends_on:
+      - mongodb
+    extends:
+      file: docker-compose.common.yml
+      service: genieacs
+    ports:
+      - 7457:7457
+    command:
+      - genieacs-cwmp
+
+  nbi:
+    depends_on:
+      - mongodb
+    extends:
+      file: docker-compose.common.yml
+      service: genieacs
+    ports:
+      - 7557:7557
+    command:
+      - genieacs-nbi
+
+  fs:
+    depends_on:
+      - mongodb
+    extends:
+      file: docker-compose.common.yml
+      service: genieacs
+    ports:
+      - 7577:7577
+    command:
+      - genieacs-fs
+
+  ui:
+    depends_on:
+      - mongodb
+    extends:
+      file: docker-compose.common.yml
+      service: genieacs
+    environment:
+      GENIEACS_UI_JWT_SECRET: SuP3Rs3Cr3t
+    ports:
+      - 3000:3000
+    command:
+      - genieacs-ui
+
+volumes:
+  geniacs-mongodb:
+    driver: local

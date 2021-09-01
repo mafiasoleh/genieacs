@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+
+  mongodb:
+    image: mongo
+
+  cwmp:
+    depends_on:
+      - mongodb
+    extends:
+      file: docker-compose.common.yml
+      service: genieacs
+    ports:
+      - 7457:7457
+    command:
+      - genieacs-cwmp

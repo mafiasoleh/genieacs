@@ -1,0 +1,17 @@
+version: "3.9"
+
+services:
+
+  mongodb:
+    image: mongo
+
+  nbi:
+    depends_on:
+      - mongodb
+    extends:
+      file: docker-compose.common.yml
+      service: genieacs
+    ports:
+      - 7557:7557
+    command:
+      - genieacs-nbi
