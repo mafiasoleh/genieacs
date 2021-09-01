@@ -1,15 +1,15 @@
 # Stage: Build
-FROM node:12-alpine as builder
+FROM node:14-alpine as builder
 LABEL stage=builder
 LABEL maintainer="mafiasoleh@gmail.com"
 
-ARG REPO_URL=https://github.com/genieacs/genieacs
-ARG BRANCH=master
+ARG REPO_URL={GENIEACS_REPO}
+ARG BRANCH={GENIEACS_BRANCH}
 
 WORKDIR /usr/src
 
 RUN set -eux; \
-  apk add --no-cache git; \
+  apk add --no-cache git coreutils; \
   git clone -b ${BRANCH} ${REPO_URL}; \
   cd genieacs; \
   npm install; \
@@ -18,7 +18,7 @@ RUN set -eux; \
 
 
 # Stage: Final Image
-FROM node:12-alpine
+FROM node:14-alpine
 LABEL maintainer "mafiasoleh@gmail.com"
 
 COPY --from=builder /usr/src/genieacs/dist /opt/genieacs
