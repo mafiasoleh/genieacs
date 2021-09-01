@@ -6,6 +6,8 @@ services:
     image: mongo
     container_name: genieacs-mongodb
     restart: unless-stopped
+    networks:
+      genieacs:
     volumes:
       - ./geniacs-mongodb:/data/db
 
@@ -20,6 +22,8 @@ services:
       - 7457:7457
     command:
       - genieacs-cwmp
+    networks:
+      genieacs:      
 
   nbi:
     depends_on:
@@ -31,6 +35,8 @@ services:
       - 7557:7557
     command:
       - genieacs-nbi
+    networks:
+      genieacs:
 
   fs:
     depends_on:
@@ -42,6 +48,8 @@ services:
       - 7577:7577
     command:
       - genieacs-fs
+    networks:
+      genieacs:
 
   ui:
     depends_on:
@@ -55,6 +63,8 @@ services:
       - 3000:3000
     command:
       - genieacs-ui
+    networks:
+      genieacs:  
 
 volumes:
   geniacs-mongodb:
