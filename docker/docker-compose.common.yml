@@ -1,0 +1,13 @@
+version: "3.6"
+
+services:
+
+  genieacs:
+    build:
+      context: .
+      args:
+        TAG: ${GENIEACS_VERSION}
+    image: mafiasoleh/genieacs:${GENIEACS_VERSION}
+    environment:
+      GENIEACS_MONGODB_CONNECTION_URL: mongodb://mongodb/genieacs
+      GENIEACS_MONGODB_CONNECTION_URL: mongodb://${MONGODB_DB_USERNAME}:${MONGODB_DB_PASSWORD@genieacs-mongodb

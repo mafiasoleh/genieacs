@@ -3,8 +3,8 @@ FROM node:14-alpine as builder
 LABEL stage=builder
 LABEL maintainer="mafiasoleh@gmail.com"
 
-ARG REPO_URL={GENIEACS_REPO}
-ARG BRANCH={GENIEACS_BRANCH}
+ARG REPO_URL=https://github.com/genieacs/genieacs
+ARG BRANCH=master
 
 WORKDIR /usr/src
 

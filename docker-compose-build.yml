@@ -1,0 +1,10 @@
+version: "3.6"
+
+services:
+
+  genieacs:
+    build:
+      context: .
+      args:
+        - TAG=${GENIEACS_VERSION}
+    image: mafiasoleh/genieacs:${GENIEACS_VERSION}

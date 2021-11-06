@@ -1,79 +1,169 @@
-version: "3.9"
+version: "3.6"
 
 services:
 
-  mongodb:
-    image: mongo
-    container_name: genieacs-mongodb
+  mongo:
+    image: mongo:4.4
+    container_name: genieacs-mongo
     restart: unless-stopped
-    ports: 
-      - "27017-27019:27017-27019"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/var/log/mongodb
+    ports:
+      - "27017:27017"
     networks:
       genieacs:
     volumes:
-      - ./geniacs-mongodb:/data/db
-
-
-  cwmp:
+      - ./opt/genieacs/mongo/db:/data/db
+      - ./opt/genieacs/mongo/config:/data/configdb
+      - ./opt/genieacs/mongo/log:/var/log/mongodb
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok' | mongo ${MONGO_USERNAME}:${MONGO_PASSWORD}@localhost --quiet
+      interval: 12s
+      timeout: 8s
+      retries: 5
+      start_period: 30s
+  
+  mongo-express:
     depends_on:
-      - mongodb
+      - mongo
+    image: mongo-express:latest
+    container_name: genieacs-mongo-express
+    restart: unless-stopped
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=genieacs-mongo
+      - ME_CONFIG_MONGODB_ENABLE_ADMIN=true
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=${MONGO_USERNAME}
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=${MONGO_PASSWORD}
+      - ME_CONFIG_BASICAUTH_ENABLE=true
+      - ME_CONFIG_BASICAUTH_USERNAME=${MONGO_EXPRESS_USERNAME}
+      - ME_CONFIG_BASICAUTH_PASSWORD=${MONGO_EXPRESS_PASSWORD}
+    ports:
+      - "8081:8081"
+    networks:
+      genieacs:
+
+  genieacs-cwmp:
+    depends_on:
+      - mongo
     container_name: genieacs-cwmp
+    restart: unless-stopped
     extends:
-      file: docker-compose.common.yml
-      service: genieacs
-    ports:
-      - 7457:7457
-    command:
-      - genieacs-cwmp
-    networks:
-      genieacs:      
-
-  nbi:
-    depends_on:
-      - mongodb
-    container_name: genieacs-nbi
-    extends:
-      file: docker-compose.common.yml
-      service: genieacs
-    ports:
-      - 7557:7557
-    command:
-      - genieacs-nbi
-    networks:
-      genieacs:
-
-  fs:
-    depends_on:
-      - mongodb
-    container_name: genieacs-fs
-    extends:
-      file: docker-compose.common.yml
-      service: genieacs
-    ports:
-      - 7577:7577
-    command:
-      - genieacs-fs
-    networks:
-      genieacs:
-
-  ui:
-    depends_on:
-      - mongodb
-    container_name: genieacs-ui
-    extends:
-      file: docker-compose.common.yml
+      file: docker-compose-build.yml
       service: genieacs
     environment:
-      GENIEACS_UI_JWT_SECRET: SuP3Rs3Cr3t
+      - GENIEACS_CWMP_INTERFACE=0.0.0.0
+      - GENIEACS_CWMP_PORT=7547
+      - GENIEACS_CWMP_SSL=false
+      - GENIEACS_CWMP_ACCESS_LOG_FILE=/opt/genieacs/log/genieacs-cwmp-access.log
+      - GENIEACS_CWMP_ERROR_LOG_FILE=/opt/genieacs/log/genieacs-cwmp-error.log
+      - GENIEACS_DEBUG_FILE=/opt/genieacs/log/genieacs-debug.yaml
+      - GENIEACS_EXT_DIR=/opt/genieacs/ext
+      - GENIEACS_MONGODB_CONNECTION_URL=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@genieacs-mongo
+    command: /usr/local/bin/genieacs-cwmp
     ports:
-      - 3000:3000
-    command:
-      - genieacs-ui
+      - "7547:7547"
     networks:
-      genieacs:  
+      genieacs:
+    volumes:
+      - ./opt/genieacs/genieacs/ext:/opt/genieacs/ext
+      - ./opt/genieacs/genieacs/log:/opt/genieacs/log
+
+  genieacs-nbi:
+    depends_on:
+      - mongo
+    container_name: genieacs-nbi
+    restart: unless-stopped
+    extends:
+      file: docker-compose-build.yml
+      service: genieacs
+    environment:
+      - GENIEACS_NBI_INTERFACE=0.0.0.0
+      - GENIEACS_NBI_PORT=7557
+      - GENIEACS_NBI_ACCESS_LOG_FILE=/opt/genieacs/log/genieacs-nbi-access.log
+      - GENIEACS_NBI_ERROR_LOG_FILE=/opt/genieacs/log/genieacs-nbi-error.log
+      - GENIEACS_DEBUG_FILE=/opt/genieacs/log/genieacs-debug.yaml
+      - GENIEACS_EXT_DIR=/opt/genieacs/ext
+      - GENIEACS_MONGODB_CONNECTION_URL=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@genieacs-mongo
+    command: /usr/local/bin/genieacs-nbi
+    ports:
+      - "7557:7557"
+    networks:
+      genieacs:
+    volumes:
+      - ./opt/genieacs/genieacs/ext:/opt/genieacs/ext
+      - ./opt/genieacs/genieacs/log:/opt/genieacs/log
+
+  genieacs-fs:
+    depends_on:
+      - mongo
+    container_name: genieacs-fs
+    restart: unless-stopped
+    extends:
+      file: docker-compose-build.yml
+      service: genieacs
+    environment:
+      - GENIEACS_FS_INTERFACE=0.0.0.0
+      - GENIEACS_FS_PORT=7567
+      - GENIEACS_FS_ACCESS_LOG_FILE=/opt/genieacs/log/genieacs-fs-access.log
+      - GENIEACS_FS_ERROR_LOG_FILE=/opt/genieacs/log/genieacs-fs-error.log
+      - GENIEACS_DEBUG_FILE=/opt/genieacs/log/genieacs-debug.yaml
+      - GENIEACS_EXT_DIR=/opt/genieacs/ext
+      - GENIEACS_MONGODB_CONNECTION_URL=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@genieacs-mongo
+    command: /usr/local/bin/genieacs-fs
+    ports:
+      - "7567:7567"
+    networks:
+      genieacs:
+    volumes:
+      - ./opt/genieacs/genieacs/ext:/opt/genieacs/ext
+      - ./opt/genieacs/genieacs/log:/opt/genieacs/log
+
+  genieacs-ui:
+    depends_on:
+      - mongo
+    container_name: genieacs-ui
+    restart: unless-stopped
+    extends:
+      file: docker-compose-build.yml
+      service: genieacs
+    environment:
+      - GENIEACS_UI_JWT_SECRET=${GENIEACS_UI_JWT_SECRET}
+      - GENIEACS_UI_INTERFACE=0.0.0.0
+      - GENIEACS_UI_PORT=3000
+      - GENIEACS_UI_ACCESS_LOG_FILE=/opt/genieacs/log/genieacs-ui-access.log
+      - GENIEACS_UI_ERROR_LOG_FILE=/opt/genieacs/log/genieacs-ui-error.log
+      - GENIEACS_DEBUG_FILE=/opt/genieacs/log/genieacs-debug.yaml
+      - GENIEACS_EXT_DIR=/opt/genieacs/ext
+      - GENIEACS_MONGODB_CONNECTION_URL=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@genieacs-mongo
+    command: /usr/local/bin/genieacs-ui
+    ports:
+      - "3000:3000"
+    networks:
+      genieacs:
+    volumes:
+      - ./opt/genieacs/genieacs/ext:/opt/genieacs/ext
+      - ./opt/genieacs/genieacs/log:/opt/genieacs/log
+    healthcheck:
+      test: ["CMD", "wget", "-O", "/dev/null", "http://localhost:3000"]
+      interval: 2m
+      timeout: 15s
+      retries: 3
+      start_period: 30s
+
 
 volumes:
-  geniacs-mongodb:
+  genieacs-mongo:
+    driver: local
+  genieacs-cwmp:
+    driver: local
+  genieacs-nbi:
+    driver: local
+  genieacs-fs:
+    driver: local
+  genieacs-ui:
     driver: local
 
 networks:

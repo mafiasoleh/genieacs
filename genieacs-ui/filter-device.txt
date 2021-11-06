@@ -1,0 +1,14 @@
+- label: "'Serial Number'"
+  parameter: DeviceID.SerialNumber
+  type: "'string'"
+- label: "'Manufacture'"
+  parameter: DeviceID.Manufacturer
+  type: "'string'"
+- label: "'Product'"
+  parameter: DeviceID.ProductClass
+  type: "'string'"
+- label: "'Model'"
+  parameter: Device.DeviceInfo.ModelName
+  type: "'string'"
+- label: "'Tag'"
+  type: "'tag'"

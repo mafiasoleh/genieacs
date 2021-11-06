@@ -1,0 +1,171 @@
+- type: "'device-actions'"
+- type: "'ping'"
+- type: "'tags'"
+- type: "'parameter-list'"
+  parameters:
+    - label: "'Status'"
+      chart: "'online'"
+      type: "'overview-dot'"
+    - label: "'Get Device'"
+      type: "'summon-button'"
+    - element: "'span.inform'"
+      label: "'Last Informations'"
+      parameter: DATE_STRING(Events.Inform)
+      parameters:
+        - Device.DeviceInfo
+        - Device.DeviceSummary
+        - Device.DHCPv4
+        - Device.DNS
+        - Device.Ethernet
+        - Device.Ethernet.Interface
+        - Device.Firewall
+        - Device.Hosts
+        - Device.Hosts.Host
+        - Device.Hosts.HostNumberOfEntries
+        - Device.IP.Interface
+        - Device.ManagementServer
+        - Device.PPP
+        - Device.Routing
+        - Device.WiFi
+        - Device.WiFi.SSID
+        - Device.WiFi.AccessPoint
+        - Device.DeviceInfo.X_MIKROTIK_SystemIdentity
+        - Device.DeviceInfo.X_MIKROTIK_ArchName
+        - Device.DeviceInfo.Description
+        - Device.DeviceInfo.ManufacturerOUI
+        - Device.DeviceInfo.HardwareVersion
+        - Device.DeviceInfo.ProductClass
+        - Device.DeviceInfo.ModelName
+        - Device.DeviceInfo.SerialNumber
+        - Device.Ethernet.Interface.1.MACAddress
+        - Device.DeviceInfo.SoftwareVersion
+        - Device.DeviceInfo.UpTime
+        - Device.DHCPv4.Client.1.IPAddress
+        - Device.IP.Interface.1.IPv4Address.1.IPAddress
+        - Device.WiFi.SSID.1.SSID
+        - Device.WiFi.SSID.2.SSID
+        - Device.WiFi.SSID.1.MACAddress
+        - Device.WiFi.SSID.2.MACAddress
+        - Device.WiFi.AccessPoint.1.AssociatedDeviceNumberOfEntries
+        - Device.WiFi.AccessPoint.2.AssociatedDeviceNumberOfEntries
+        - Device.WiFi.AccessPoint.1.AssociatedDevice
+        - Device.WiFi.AccessPoint.2.AssociatedDevice
+        - Device.WiFi.AccessPoint.1.Security.KeyPassphrase
+        - Device.WiFi.AccessPoint.2.Security.KeyPassphrase
+    - label: "'ACS Server'"
+      parameter: Device.ManagementServer.URL
+    - label: "'ACS Username'"
+      parameter: Device.ManagementServer.Username
+    - label: "'ACS Password'"
+      parameter: Device.ManagementServer.Password
+    - label: "'Provisioning Code'"
+      parameter: Device.DeviceInfo.ProvisioningCode
+    - label: "'Upime'"
+      parameter: Device.DeviceInfo.UpTime
+    - label: "'Serial Number'"
+      parameter: DeviceID.SerialNumber
+    - label: "'Identity'"
+      parameter: Device.DeviceInfo.X_MIKROTIK_SystemIdentity
+    - label: "'Manufacture'"
+      parameter: DeviceID.Manufacturer
+    - label: "'Architecture'"
+      parameter: Device.DeviceInfo.X_MIKROTIK_ArchName
+    - label: "'Product Class'"
+      parameter: Device.DeviceInfo.ProductClass
+    - label: "'Model Name'"
+      parameter: Device.DeviceInfo.ModelName
+    - label: "'Hardware Version'"
+      parameter: Device.DeviceInfo.HardwareVersion
+    - label: "'Software Version'"
+      parameter: Device.DeviceInfo.SoftwareVersion
+    - label: "'Device Description'"
+      parameter: Device.DeviceInfo.Description
+    - label: "'Port 1 IP Address'"
+      parameter: Device.IP.Interface.1.IPv4Address.1.IPAddress
+    - label: "'Port 1 MAC Address'"
+      parameter: Device.Ethernet.Interface.1.MACAddress
+    - label: "'WiFi 1 SSID'"
+      parameter: Device.WiFi.SSID.1.SSID
+    - label: "'WiFi 1 MAC Address'"
+      parameter: Device.WiFi.SSID.1.MACAddress
+    - label: "'WiFi 1 Channel'"
+      parameter: Device.WiFi.Radio.1.Channel
+    - label: "'WiFi 1 Password'"
+      parameter: Device.WiFi.AccessPoint.1.Security.KeyPassphrase
+    - label: "'WiFi 1 Connected'"
+      parameter: Device.WiFi.AccessPoint.1.AssociatedDeviceNumberOfEntries
+    - label: "'WiFi 2 SSID'"
+      parameter: Device.WiFi.SSID.2.SSID
+    - label: "'WiFi 2 MAC Address'"
+      parameter: Device.WiFi.SSID.2.MACAddress
+    - label: "'WiFi 2 Password'"
+      parameter: Device.WiFi.AccessPoint.2.Security.KeyPassphrase
+    - label: "'WiFi 2 Channel'"
+      parameter: Device.WiFi.Radio.2.Channel
+    - label: "'WiFi 2 Connected'"
+      parameter: Device.WiFi.AccessPoint.2.AssociatedDeviceNumberOfEntries
+- label: "'WiFi 1 Hosts'"
+  parameter: Device.WiFi.AccessPoint.1.AssociatedDevice
+  type: "'parameter-table'"
+  childParameters:
+    - label: "'MAC address'"
+      parameter: MACAddress
+    - label: "'Signal'"
+      parameter: SignalStrength
+    - label: "'SNR'"
+      parameter: X_MIKROTIK_Stats.SignalToNoise
+    - label: "'Tx Packet'"
+      parameter: Stats.PacketsSent
+    - label: "'Rx Packet'"
+      parameter: Stats.PacketsReceived
+    - label: "'Tx Byte'"
+      parameter: Stats.BytesSent
+    - label: "'Rx Byte'"
+      parameter: Stats.BytesReceived
+- label: "'WiFi 2 Hosts'"
+  parameter: Device.WiFi.AccessPoint.2.AssociatedDevice
+  type: "'parameter-table'"
+  childParameters:
+    - label: "'MAC address'"
+      parameter: MACAddress
+    - label: "'Signal'"
+      parameter: SignalStrength
+    - label: "'SNR'"
+      parameter: X_MIKROTIK_Stats.SignalToNoise
+    - label: "'Tx Packet'"
+      parameter: Stats.PacketsSent
+    - label: "'Rx Packet'"
+      parameter: Stats.PacketsReceived
+    - label: "'Tx Byte'"
+      parameter: Stats.BytesSent
+    - label: "'Rx Byte'"
+      parameter: Stats.BytesReceived
+- label: "'DHCPv4 Connected'"
+  parameter: Device.Hosts.Host
+  type: "'parameter-table'"
+  childParameters:
+    - label: "'IP Address'"
+      parameter: IPAddress
+    - label: "'MAC Address'"
+      parameter: PhysAddress
+    - label: "'Hostname'"
+      parameter: HostName
+    - label: "'Interface'"
+      parameter: Layer1Interface
+- element: "'div'"
+  type: "'container'"
+  components:
+    - element: "'h3'"
+      type: "'container'"
+      components:
+        - "'Faults'"
+    - type: "'device-faults'"
+- element: "'div'"
+  type: "'container'"
+  components:
+    - element: "'h3'"
+      type: "'container'"
+      components:
+        - "'All parameters'"
+    - type: "'all-parameters'"
+- type: "'device-actions'"
